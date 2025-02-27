@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const API_URL = "https://gerador-estrutura-projetos-nrk2.onrender.com/gerar-estrutura"; // 🔹 Backend no Render
+    const API_URL = "https://gerador-estrutura-projetos-nrk2.onrender.com/gerar-estrutura"; // 🔹 URL do backend no Render
 
     // Botão para gerar estrutura
     document.getElementById("generateBtn").addEventListener("click", async function(event) {
-        event.preventDefault(); // 🔹 Evita que o formulário tente enviar um GET
+        event.preventDefault(); // 🔹 Evita comportamento padrão de formulário
 
         const inputText = document.getElementById("inputText").value;
 
