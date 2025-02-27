@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Botão para gerar estrutura
     document.getElementById("generateBtn").addEventListener("click", async function(event) {
-        event.preventDefault(); // 🔹 Evita comportamento padrão de formulário
+        event.preventDefault(); // 🔹 Evita comportamento padrão que pode estar acionando GET sem querer
 
         const inputText = document.getElementById("inputText").value;
 
@@ -12,34 +12,38 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        console.log("➡️ Enviando requisição para API...");
-        console.log("🔹 URL:", API_URL);
-        console.log("🔹 Método: POST");
-        console.log("🔹 Payload:", JSON.stringify({ estrutura: inputText }));
+        console.log("➡️ [DEBUG] Enviando requisição para API...");
+        console.log("🔹 [DEBUG] URL:", API_URL);
+        console.log("🔹 [DEBUG] Método: POST");
+        console.log("🔹 [DEBUG] Payload:", JSON.stringify({ estrutura: inputText }));
 
         try {
             const response = await fetch(API_URL, {  
-                method: "POST",  // 🔹 GARANTINDO que é POST
+                method: "POST",  // 🔹 Garantindo que é POST
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ estrutura: inputText })
             });
 
-            console.log("⬅️ Resposta recebida da API...");
-            console.log("🔹 Status:", response.status);
-            console.log("🔹 Headers:", response.headers);
+            console.log("⬅️ [DEBUG] Resposta recebida da API...");
+            console.log("🔹 [DEBUG] Status:", response.status);
+            console.log("🔹 [DEBUG] Headers:", response.headers);
+
+            if (!response.ok) {
+                throw new Error(`Erro HTTP: ${response.status}`);
+            }
 
             const data = await response.json();
-            console.log("🔹 Resposta JSON:", data);
+            console.log("🔹 [DEBUG] Resposta JSON:", data);
 
             if (response.ok) {
                 document.getElementById("outputCode").textContent = data.codigo.replace(/\n/g, "\n");
-                console.log("✅ Código gerado com sucesso!");
+                console.log("✅ [DEBUG] Código gerado com sucesso!");
             } else {
-                console.error("❌ Erro ao gerar código:", data.erro || "Erro desconhecido.");
+                console.error("❌ [DEBUG] Erro ao gerar código:", data.erro || "Erro desconhecido.");
                 alert("Erro ao gerar código: " + (data.erro || "Erro desconhecido."));
             }
         } catch (error) {
-            console.error("🚨 Erro ao conectar com o servidor:", error);
+            console.error("🚨 [DEBUG] Erro ao conectar com o servidor:", error);
             alert("Erro ao conectar com o servidor.");
         }
     });
@@ -55,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         navigator.clipboard.writeText(outputCode)
             .then(() => alert("Código copiado para a área de transferência!"))
-            .catch(err => console.error("❌ Erro ao copiar código:", err));
+            .catch(err => console.error("❌ [DEBUG] Erro ao copiar código:", err));
     });
 
     // Botão para baixar código como .py
