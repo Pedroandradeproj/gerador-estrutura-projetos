@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+    const API_URL = "https://gerador-estrutura-projetos-nrk2.onrender.com/gerar-estrutura"; // 🔹 API do Render
+
     // Botão para gerar estrutura
     document.getElementById("generateBtn").addEventListener("click", function() {
         const inputText = document.getElementById("inputText").value;
@@ -8,16 +10,23 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        fetch("http://127.0.0.1:5000/gerar-estrutura", {
+        fetch(API_URL, {  // 🔹 Agora se conecta ao backend no Render
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ estrutura: inputText })
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById("outputCode").textContent = data.codigo.replace(/\n/g, "\n");
+            if (data.codigo) {
+                document.getElementById("outputCode").textContent = data.codigo.replace(/\n/g, "\n");
+            } else {
+                alert("Erro ao gerar código: " + (data.erro || "Erro desconhecido."));
+            }
         })
-        .catch(error => console.error("Erro ao gerar estrutura:", error));
+        .catch(error => {
+            console.error("Erro ao gerar estrutura:", error);
+            alert("Erro ao conectar com o servidor.");
+        });
     });
 
     // Botão para copiar código
