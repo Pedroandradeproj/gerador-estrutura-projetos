@@ -3,6 +3,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
+
 # ✅ Garante que o diretório `src/` seja reconhecido pelo Python
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
@@ -13,6 +14,9 @@ from src.backend.generator import CodeGenerator
 
 app = Flask(__name__)
 CORS(app)  # Permite requisições de diferentes origens
+@app.route("/")
+def home():
+    return jsonify({"mensagem": "API Gerador de Estrutura está funcionando!"})
 
 @app.route("/gerar-estrutura", methods=["POST"])
 def gerar_estrutura():
