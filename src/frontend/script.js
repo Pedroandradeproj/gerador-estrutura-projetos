@@ -3,48 +3,37 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Botão para gerar estrutura
     document.getElementById("generateBtn").addEventListener("click", async function(event) {
-        event.preventDefault(); // 🔹 Evita comportamento padrão que pode estar acionando GET sem querer
+        event.preventDefault(); // 🔹 Evita comportamento padrão de formulário
 
         const inputText = document.getElementById("inputText").value;
 
         if (!inputText.trim()) {
-            alert("Por favor, digite uma estrutura antes de gerar o código!");
+            alert("⚠️ Por favor, digite uma estrutura antes de gerar o código!");
             return;
         }
 
-        console.log("➡️ [DEBUG] Enviando requisição para API...");
-        console.log("🔹 [DEBUG] URL:", API_URL);
-        console.log("🔹 [DEBUG] Método: POST");
-        console.log("🔹 [DEBUG] Payload:", JSON.stringify({ estrutura: inputText }));
+        alert("➡️ Enviando requisição para API...\n🔹 URL: " + API_URL + "\n🔹 Método: POST");
 
         try {
             const response = await fetch(API_URL, {  
-                method: "POST",  // 🔹 Garantindo que é POST
+                method: "POST",  
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ estrutura: inputText })
             });
 
-            console.log("⬅️ [DEBUG] Resposta recebida da API...");
-            console.log("🔹 [DEBUG] Status:", response.status);
-            console.log("🔹 [DEBUG] Headers:", response.headers);
-
-            if (!response.ok) {
-                throw new Error(`Erro HTTP: ${response.status}`);
-            }
+            alert("⬅️ Resposta recebida da API...\n🔹 Status: " + response.status);
 
             const data = await response.json();
-            console.log("🔹 [DEBUG] Resposta JSON:", data);
+            alert("🔹 Resposta JSON:\n" + JSON.stringify(data, null, 2));
 
             if (response.ok) {
                 document.getElementById("outputCode").textContent = data.codigo.replace(/\n/g, "\n");
-                console.log("✅ [DEBUG] Código gerado com sucesso!");
+                alert("✅ Código gerado com sucesso!");
             } else {
-                console.error("❌ [DEBUG] Erro ao gerar código:", data.erro || "Erro desconhecido.");
-                alert("Erro ao gerar código: " + (data.erro || "Erro desconhecido."));
+                alert("❌ Erro ao gerar código:\n" + (data.erro || "Erro desconhecido."));
             }
         } catch (error) {
-            console.error("🚨 [DEBUG] Erro ao conectar com o servidor:", error);
-            alert("Erro ao conectar com o servidor.");
+            alert("🚨 Erro ao conectar com o servidor:\n" + error);
         }
     });
 
@@ -53,13 +42,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const outputCode = document.getElementById("outputCode").textContent;
         
         if (!outputCode.trim()) {
-            alert("Nenhum código gerado para copiar!");
+            alert("⚠️ Nenhum código gerado para copiar!");
             return;
         }
 
         navigator.clipboard.writeText(outputCode)
-            .then(() => alert("Código copiado para a área de transferência!"))
-            .catch(err => console.error("❌ [DEBUG] Erro ao copiar código:", err));
+            .then(() => alert("✅ Código copiado para a área de transferência!"))
+            .catch(err => alert("❌ Erro ao copiar código: " + err));
     });
 
     // Botão para baixar código como .py
@@ -67,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const outputCode = document.getElementById("outputCode").textContent;
         
         if (!outputCode.trim()) {
-            alert("Nenhum código gerado para baixar!");
+            alert("⚠️ Nenhum código gerado para baixar!");
             return;
         }
 
@@ -78,5 +67,7 @@ document.addEventListener("DOMContentLoaded", function() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+
+        alert("📥 Download iniciado!");
     });
 });
