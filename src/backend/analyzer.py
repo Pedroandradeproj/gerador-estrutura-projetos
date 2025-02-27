@@ -26,8 +26,8 @@ class StructureAnalyzer:
         stack = []  # Mantém o histórico de diretórios para criar caminhos corretos
 
         for index, line in enumerate(self.cleaned_lines):
-            # Conta a indentação real (ignorando caracteres gráficos como espaço)
-            indent_level = len(line) - len(line.lstrip(" │├└─"))
+            # Conta a indentação real (incluindo caracteres gráficos como espaço)
+            indent_level = len(line) - len(line.lstrip(" │├└─"))  # Contando os caracteres gráficos
 
             # Remove caracteres gráficos, mas mantém o alinhamento correto
             clean_line = re.sub(r"[│├└──]+", "", line).strip()
@@ -46,11 +46,11 @@ class StructureAnalyzer:
             parent_path = stack[-1][1] if stack else self.root_folder
             full_path = f"{parent_path}/{clean_line}".replace("//", "/").rstrip("/")
 
-            # Atualiza a pilha e a estrutura conforme necessário
-            if clean_line.endswith("/"):  # É uma pasta
+            # Detecta se é um **arquivo** ou uma **pasta** corretamente
+            if clean_line.endswith("/") or "." not in clean_line:  # Se termina com `/` ou **não tem extensão**, é pasta
                 stack.append((indent_level, full_path))
                 structure.append({"type": "folder", "path": full_path})
-            else:  # É um arquivo
+            else:  # Se tem extensão, é um arquivo
                 structure.append({"type": "file", "path": full_path})
 
         return structure

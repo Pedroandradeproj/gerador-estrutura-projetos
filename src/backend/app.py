@@ -7,8 +7,8 @@ from flask_cors import CORS
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 # ✅ Importa corretamente os módulos dentro de `backend/`
-from backend.analyzer import StructureAnalyzer
-from backend.generator import CodeGenerator
+from analyzer import StructureAnalyzer
+from generator import CodeGenerator
 
 app = Flask(__name__)
 CORS(app)  # Permite requisições de diferentes origens
