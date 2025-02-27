@@ -2,7 +2,9 @@ document.addEventListener("DOMContentLoaded", function() {
     const API_URL = "https://gerador-estrutura-projetos-nrk2.onrender.com/gerar-estrutura"; // 🔹 Backend no Render
 
     // Botão para gerar estrutura
-    document.getElementById("generateBtn").addEventListener("click", async function() {
+    document.getElementById("generateBtn").addEventListener("click", async function(event) {
+        event.preventDefault(); // 🔹 Evita o comportamento padrão que pode estar acionando um GET
+
         const inputText = document.getElementById("inputText").value;
 
         if (!inputText.trim()) {
@@ -17,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         try {
             const response = await fetch(API_URL, {  
-                method: "POST",  // 🔹 GARANTE que a requisição seja `POST`
+                method: "POST",  // 🔹 AGORA GARANTIMOS QUE É POST
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ estrutura: inputText })
             });
