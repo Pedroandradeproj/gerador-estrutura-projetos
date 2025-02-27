@@ -10,22 +10,34 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
+        console.log("➡️ Enviando requisição para API...");
+        console.log("🔹 URL:", API_URL);
+        console.log("🔹 Método: POST");
+        console.log("🔹 Payload:", JSON.stringify({ estrutura: inputText }));
+
         try {
-            const response = await fetch(API_URL, {  // 🔹 Agora a requisição é `POST`
-                method: "POST",
+            const response = await fetch(API_URL, {  
+                method: "POST",  // 🔹 GARANTE que a requisição seja `POST`
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ estrutura: inputText })
             });
 
+            console.log("⬅️ Resposta recebida da API...");
+            console.log("🔹 Status:", response.status);
+            console.log("🔹 Headers:", response.headers);
+
             const data = await response.json();
+            console.log("🔹 Resposta JSON:", data);
 
             if (response.ok) {
                 document.getElementById("outputCode").textContent = data.codigo.replace(/\n/g, "\n");
+                console.log("✅ Código gerado com sucesso!");
             } else {
+                console.error("❌ Erro ao gerar código:", data.erro || "Erro desconhecido.");
                 alert("Erro ao gerar código: " + (data.erro || "Erro desconhecido."));
             }
         } catch (error) {
-            console.error("Erro ao gerar estrutura:", error);
+            console.error("🚨 Erro ao conectar com o servidor:", error);
             alert("Erro ao conectar com o servidor.");
         }
     });
@@ -41,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         navigator.clipboard.writeText(outputCode)
             .then(() => alert("Código copiado para a área de transferência!"))
-            .catch(err => console.error("Erro ao copiar código:", err));
+            .catch(err => console.error("❌ Erro ao copiar código:", err));
     });
 
     // Botão para baixar código como .py
