@@ -1,6 +1,7 @@
 import sys
 import os
 from flask import Flask, request, jsonify
+
 from flask_cors import CORS
 
 # ✅ Garante que o diretório `src/` seja reconhecido pelo Python
@@ -13,12 +14,26 @@ from src.backend.generator import CodeGenerator
 app = Flask(__name__)
 CORS(app)  # Permite requisições de diferentes origens
 
-# 🔹 Rota inicial para evitar erro 404
+# 🔹 Rota inicial para exibir um link para o frontend
 @app.route("/")
 def home():
-    return jsonify({"mensagem": "API Gerador de Estrutura está funcionando!"})
+    frontend_url = "https://SEU-FRONTEND.onrender.com/"  # 🔹 Substitua pelo link real do frontend
+    return f"""
+    <html>
+        <head>
+            <title>API Gerador de Estrutura</title>
+        </head>
+        <body style="text-align: center; font-family: Arial, sans-serif;">
+            <h1>🚀 API Gerador de Estrutura</h1>
+            <p>Acesse o frontend clicando no botão abaixo:</p>
+            <a href="{frontend_url}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: white; background-color: #007BFF; text-decoration: none; border-radius: 5px;">
+                Ir para o Frontend
+            </a>
+        </body>
+    </html>
+    """
 
-# 🔹 Rota para gerar estrutura de projeto (GARANTINDO QUE ACEITA SOMENTE `POST`)
+# 🔹 Rota para gerar estrutura de projeto
 @app.route("/gerar-estrutura", methods=["POST"])
 def gerar_estrutura():
     if request.method == "GET":
