@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         try {
-            const response = await fetch(API_URL, {  // 🔹 Agora garante que a requisição é `POST`
+            const response = await fetch(API_URL, {  // 🔹 Agora a requisição é `POST`
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ estrutura: inputText })
