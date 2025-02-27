@@ -18,13 +18,16 @@ CORS(app)  # Permite requisições de diferentes origens
 def home():
     return jsonify({"mensagem": "API Gerador de Estrutura está funcionando!"})
 
-@app.route("/gerar-estrutura", methods=["POST"])
+@app.route("/gerar-estrutura", methods=["GET", "POST"])
 def gerar_estrutura():
+    if request.method == "GET":
+        return jsonify({"mensagem": "Use um método POST para enviar a estrutura."})
+
     if request.content_type != "application/json":
         return jsonify({"erro": "O cabeçalho Content-Type deve ser application/json"}), 415
 
     try:
-        data = request.get_json(force=True)  # ✅ Força a conversão para JSON
+        data = request.get_json(force=True)
         if not data:
             return jsonify({"erro": "O corpo da requisição está vazio ou inválido"}), 400
 
@@ -32,7 +35,6 @@ def gerar_estrutura():
         if not input_text:
             return jsonify({"erro": "O campo 'estrutura' é obrigatório"}), 400
 
-        # Processa a estrutura usando os módulos do backend
         analyzer = StructureAnalyzer(input_text)
         estrutura = analyzer.get_structure()
 
