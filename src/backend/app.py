@@ -17,7 +17,7 @@ CORS(app)  # Permite requisições de diferentes origens
 # 🔹 Rota inicial para exibir um link para o frontend
 @app.route("/")
 def home():
-    frontend_url = "https://SEU-FRONTEND.onrender.com/"  # 🔹 Substitua pelo link real do frontend
+    frontend_url = "https://gerador-estrutura-projetos-nrk2.onrender.com/gerar-estrutura"  # 🔹 Substitua pelo link real do frontend
     return f"""
     <html>
         <head>
