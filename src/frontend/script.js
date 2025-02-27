@@ -1,9 +1,20 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const API_URL = "https://gerador-estrutura-projetos-nrk2.onrender.com/gerar-estrutura"; // 🔹 URL do backend no Render
+    console.log("✅ O JavaScript foi carregado corretamente!");
 
-    // Botão para gerar estrutura
-    document.getElementById("generateBtn").addEventListener("click", async function(event) {
-        event.preventDefault(); // 🔹 Evita comportamento padrão de formulário
+    const generateBtn = document.getElementById("generateBtn");
+    
+    if (!generateBtn) {
+        alert("🚨 ERRO: O botão 'Gerar Estrutura' não foi encontrado no HTML!");
+        console.error("❌ ERRO: O botão 'generateBtn' não existe no DOM.");
+        return;
+    }
+
+    alert("✅ O botão 'Gerar Estrutura' foi encontrado!");
+
+    generateBtn.addEventListener("click", async function(event) {
+        event.preventDefault();
+
+        alert("✅ O botão 'Gerar Estrutura' foi clicado!");
 
         const inputText = document.getElementById("inputText").value;
 
@@ -11,6 +22,8 @@ document.addEventListener("DOMContentLoaded", function() {
             alert("⚠️ Por favor, digite uma estrutura antes de gerar o código!");
             return;
         }
+
+        const API_URL = "https://gerador-estrutura-projetos-nrk2.onrender.com/gerar-estrutura";
 
         alert("➡️ Enviando requisição para API...\n🔹 URL: " + API_URL + "\n🔹 Método: POST");
 
