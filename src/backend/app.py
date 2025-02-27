@@ -18,11 +18,11 @@ CORS(app)  # Permite requisições de diferentes origens
 def home():
     return jsonify({"mensagem": "API Gerador de Estrutura está funcionando!"})
 
-# 🔹 Rota para gerar estrutura de projeto
+# 🔹 Rota para gerar estrutura de projeto (GARANTINDO QUE ACEITA SOMENTE `POST`)
 @app.route("/gerar-estrutura", methods=["POST"])
 def gerar_estrutura():
     if request.method == "GET":
-        return jsonify({"mensagem": "Use um método POST para enviar a estrutura."})
+        return jsonify({"erro": "Método GET não é permitido. Use POST."}), 405
 
     if request.content_type != "application/json":
         return jsonify({"erro": "O cabeçalho Content-Type deve ser application/json"}), 415

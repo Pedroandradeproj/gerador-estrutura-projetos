@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Botão para gerar estrutura
     document.getElementById("generateBtn").addEventListener("click", async function(event) {
-        event.preventDefault(); // 🔹 Evita o comportamento padrão que pode estar acionando um GET
+        event.preventDefault(); // 🔹 Evita que o formulário tente enviar um GET
 
         const inputText = document.getElementById("inputText").value;
 
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         try {
             const response = await fetch(API_URL, {  
-                method: "POST",  // 🔹 AGORA GARANTIMOS QUE É POST
+                method: "POST",  // 🔹 GARANTINDO que é POST
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ estrutura: inputText })
             });
