@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const API_URL = "/gerar-estrutura"; // 🔹 Agora a API usa um caminho relativo, pois o backend e o frontend estão juntos.
+    const API_URL = "/gerar-estrutura"; // 🔹 Caminho relativo para o backend
 
     console.log("✅ O JavaScript foi carregado corretamente!");
 
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const inputText = document.getElementById("inputText").value;
 
         if (!inputText.trim()) {
-            console.warn("⚠️ Nenhuma estrutura foi digitada pelo usuário.");
+            alert("⚠️ Por favor, digite uma estrutura antes de gerar o código!");
             return;
         }
 
@@ -46,31 +46,35 @@ document.addEventListener("DOMContentLoaded", function() {
                 console.log("✅ Código gerado com sucesso!");
             } else {
                 console.error("❌ Erro ao gerar código:", data.erro || "Erro desconhecido.");
+                alert("❌ Erro ao gerar código:\n" + (data.erro || "Erro desconhecido."));
             }
         } catch (error) {
             console.error("🚨 Erro ao conectar com o servidor:", error);
+            alert("🚨 Erro ao conectar com o servidor.");
         }
     });
 
-    // Botão para copiar código
+    // Botão para copiar código (Alert para o usuário)
     document.getElementById("copyBtn").addEventListener("click", function() {
         const outputCode = document.getElementById("outputCode").textContent;
         
         if (!outputCode.trim()) {
+            alert("⚠️ Nenhum código gerado para copiar!");
             console.warn("⚠️ O usuário tentou copiar sem ter código gerado.");
             return;
         }
 
         navigator.clipboard.writeText(outputCode)
-            .then(() => console.log("✅ Código copiado para a área de transferência!"))
-            .catch(err => console.error("❌ Erro ao copiar código:", err));
+            .then(() => alert("✅ Código copiado para a área de transferência!"))
+            .catch(err => alert("❌ Erro ao copiar código: " + err));
     });
 
-    // Botão para baixar código como .py
+    // Botão para baixar código como .py (Alert para o usuário)
     document.getElementById("downloadBtn").addEventListener("click", function() {
         const outputCode = document.getElementById("outputCode").textContent;
         
         if (!outputCode.trim()) {
+            alert("⚠️ Nenhum código gerado para baixar!");
             console.warn("⚠️ O usuário tentou baixar sem ter código gerado.");
             return;
         }
@@ -83,6 +87,6 @@ document.addEventListener("DOMContentLoaded", function() {
         link.click();
         document.body.removeChild(link);
 
-        console.log("📥 Download iniciado!");
+        alert("📥 Download iniciado com sucesso!");
     });
 });
