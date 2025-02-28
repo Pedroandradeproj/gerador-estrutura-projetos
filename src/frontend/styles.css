@@ -94,3 +94,116 @@ pre {
         width: 95%;
     }
 }
+/* Reset Básico */
+body, h1, h2, p, textarea, button, pre {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Estilo do Corpo */
+body {
+    background-color: #f4f4f4;
+    color: #333;
+    text-align: center;
+    padding: 20px;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Navbar e Footer */
+header, footer {
+    background-color: #333;
+    color: white;
+    padding: 15px;
+}
+
+/* Container Centralizado */
+.container, .output-container {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+/* Área de Entrada */
+textarea {
+    width: 100%;
+    height: 200px;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Botões */
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 5px;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+/* Estilo do Código Gerado */
+pre {
+    background-color: #222;
+    color: #00ff00;
+    padding: 15px;
+    width: 100%;
+    text-align: left;
+    white-space: pre-wrap;
+    border-radius: 5px;
+    font-family: monospace;
+    overflow-x: auto;
+}
+
+/* Botões Específicos */
+#copyBtn {
+    background-color: #007bff;
+}
+
+#copyBtn:hover {
+    background-color: #0056b3;
+}
+
+#downloadBtn {
+    background-color: #ff9800;
+}
+
+#downloadBtn:hover {
+    background-color: #e68900;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container, .output-container {
+        width: 95%;
+    }
+}
+
+/* Modo Escuro */
+.dark-mode {
+    background-color: #222;
+    color: white;
+}
+
+.dark-mode .container, .dark-mode .output-container {
+    background-color: #333;
+    color: white;
+}
+
+.dark-mode pre {
+    background-color: black;
+    color: #00ff00;
+}
