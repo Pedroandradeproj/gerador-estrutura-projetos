@@ -1,52 +1,54 @@
 document.addEventListener("DOMContentLoaded", function() {
+    const API_URL = "/gerar-estrutura"; // 🔹 Agora a API usa um caminho relativo, pois o backend e o frontend estão juntos.
+
     console.log("✅ O JavaScript foi carregado corretamente!");
 
     const generateBtn = document.getElementById("generateBtn");
-    
+
     if (!generateBtn) {
-        alert("🚨 ERRO: O botão 'Gerar Estrutura' não foi encontrado no HTML!");
         console.error("❌ ERRO: O botão 'generateBtn' não existe no DOM.");
         return;
     }
 
-    alert("✅ O botão 'Gerar Estrutura' foi encontrado!");
-
     generateBtn.addEventListener("click", async function(event) {
         event.preventDefault();
 
-        alert("✅ O botão 'Gerar Estrutura' foi clicado!");
+        console.log("➡️ Botão 'Gerar Estrutura' clicado!");
 
         const inputText = document.getElementById("inputText").value;
 
         if (!inputText.trim()) {
-            alert("⚠️ Por favor, digite uma estrutura antes de gerar o código!");
+            console.warn("⚠️ Nenhuma estrutura foi digitada pelo usuário.");
             return;
         }
 
-        const API_URL = "https://gerador-estrutura-projetos-nrk2.onrender.com/gerar-estrutura";
-
-        alert("➡️ Enviando requisição para API...\n🔹 URL: " + API_URL + "\n🔹 Método: POST");
+        console.log("➡️ Enviando requisição para API...");
+        console.log("🔹 URL:", API_URL);
+        console.log("🔹 Método: POST");
+        console.log("🔹 Payload:", JSON.stringify({ estrutura: inputText }));
 
         try {
             const response = await fetch(API_URL, {  
-                method: "POST",  
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ estrutura: inputText })
             });
 
-            alert("⬅️ Resposta recebida da API...\n🔹 Status: " + response.status);
+            console.log("⬅️ Resposta recebida da API...");
+            console.log("🔹 Status:", response.status);
+            console.log("🔹 Headers:", response.headers);
 
             const data = await response.json();
-            alert("🔹 Resposta JSON:\n" + JSON.stringify(data, null, 2));
+            console.log("🔹 Resposta JSON:", data);
 
             if (response.ok) {
                 document.getElementById("outputCode").textContent = data.codigo.replace(/\n/g, "\n");
-                alert("✅ Código gerado com sucesso!");
+                console.log("✅ Código gerado com sucesso!");
             } else {
-                alert("❌ Erro ao gerar código:\n" + (data.erro || "Erro desconhecido."));
+                console.error("❌ Erro ao gerar código:", data.erro || "Erro desconhecido.");
             }
         } catch (error) {
-            alert("🚨 Erro ao conectar com o servidor:\n" + error);
+            console.error("🚨 Erro ao conectar com o servidor:", error);
         }
     });
 
@@ -55,13 +57,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const outputCode = document.getElementById("outputCode").textContent;
         
         if (!outputCode.trim()) {
-            alert("⚠️ Nenhum código gerado para copiar!");
+            console.warn("⚠️ O usuário tentou copiar sem ter código gerado.");
             return;
         }
 
         navigator.clipboard.writeText(outputCode)
-            .then(() => alert("✅ Código copiado para a área de transferência!"))
-            .catch(err => alert("❌ Erro ao copiar código: " + err));
+            .then(() => console.log("✅ Código copiado para a área de transferência!"))
+            .catch(err => console.error("❌ Erro ao copiar código:", err));
     });
 
     // Botão para baixar código como .py
@@ -69,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const outputCode = document.getElementById("outputCode").textContent;
         
         if (!outputCode.trim()) {
-            alert("⚠️ Nenhum código gerado para baixar!");
+            console.warn("⚠️ O usuário tentou baixar sem ter código gerado.");
             return;
         }
 
@@ -81,6 +83,6 @@ document.addEventListener("DOMContentLoaded", function() {
         link.click();
         document.body.removeChild(link);
 
-        alert("📥 Download iniciado!");
+        console.log("📥 Download iniciado!");
     });
 });
