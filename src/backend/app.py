@@ -1,6 +1,6 @@
 import sys
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory, render_template
 
 from flask_cors import CORS
 
@@ -11,27 +11,19 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 from src.backend.analyzer import StructureAnalyzer
 from src.backend.generator import CodeGenerator
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="../frontend", static_url_path="/")
+
 CORS(app)  # Permite requisições de diferentes origens
 
-# 🔹 Rota inicial para exibir um link para o frontend
+# 🔹 Servir o frontend (HTML) ao acessar "/"
 @app.route("/")
-def home():
-    frontend_url = "https://gerador-estrutura-projetos-nrk2.onrender.com/gerar-estrutura"  # 🔹 Substitua pelo link real do frontend
-    return f"""
-    <html>
-        <head>
-            <title>API Gerador de Estrutura</title>
-        </head>
-        <body style="text-align: center; font-family: Arial, sans-serif;">
-            <h1>🚀 API Gerador de Estrutura</h1>
-            <p>Acesse o frontend clicando no botão abaixo:</p>
-            <a href="{frontend_url}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: white; background-color: #007BFF; text-decoration: none; border-radius: 5px;">
-                Ir para o Frontend
-            </a>
-        </body>
-    </html>
-    """
+def serve_frontend():
+    return send_from_directory(app.static_folder, "index.html")
+
+# 🔹 Servir arquivos estáticos (CSS, JS, imagens)
+@app.route("/<path:path>")
+def serve_static_files(path):
+    return send_from_directory(app.static_folder, path)
 
 # 🔹 Rota para gerar estrutura de projeto
 @app.route("/gerar-estrutura", methods=["POST"])
