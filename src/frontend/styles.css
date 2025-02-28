@@ -2,103 +2,8 @@
 body, h1, h2, p, textarea, button, pre {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
-}
-
-/* Estilo do Corpo */
-body {
-    background-color: #f4f4f4;
-    color: #333;
-    text-align: center;
-    padding: 20px;
-}
-
-/* Navbar e Footer */
-header, footer {
-    background-color: #333;
-    color: white;
-    padding: 15px;
-}
-
-/* Container Centralizado */
-.container, .output-container {
-    width: 80%;
-    margin: 20px auto;
-    padding: 20px;
-    background: white;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-}
-
-/* Área de Entrada */
-textarea {
-    width: 100%;
-    height: 200px;
-    margin: 10px 0;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-/* Botões */
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    margin: 5px;
-    transition: background 0.3s;
-}
-
-button:hover {
-    background-color: #218838;
-}
-
-/* Estilo do Código Gerado */
-pre {
-    background-color: #222;
-    color: #00ff00;
-    padding: 15px;
-    width: 100%;
-    text-align: left;
-    white-space: pre-wrap;
-    border-radius: 5px;
-    font-family: monospace;
-    overflow-x: auto;
-}
-
-/* Botões Específicos */
-#copyBtn {
-    background-color: #007bff;
-}
-
-#copyBtn:hover {
-    background-color: #0056b3;
-}
-
-#downloadBtn {
-    background-color: #ff9800;
-}
-
-#downloadBtn:hover {
-    background-color: #e68900;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    .container, .output-container {
-        width: 95%;
-    }
-}
-/* Reset Básico */
-body, h1, h2, p, textarea, button, pre {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-sizing: border-box;
 }
 
 /* Estilo do Corpo */
@@ -108,64 +13,95 @@ body {
     text-align: center;
     padding: 20px;
     transition: background 0.3s, color 0.3s;
+    line-height: 1.6;
 }
 
-/* Navbar e Footer */
-header, footer {
+/* Cabeçalho */
+header {
     background-color: #333;
     color: white;
-    padding: 15px;
+    padding: 20px;
+    border-bottom: 3px solid #28a745;
 }
 
-/* Container Centralizado */
-.container, .output-container {
-    width: 80%;
-    margin: 20px auto;
-    padding: 20px;
-    background: white;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+#toggleTheme {
+    background-color: #444;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: white;
     border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#toggleTheme:hover {
+    background-color: #555;
+}
+
+/* Container Principal */
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.container, .output-container {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #333;
 }
 
 /* Área de Entrada */
 textarea {
     width: 100%;
     height: 200px;
-    margin: 10px 0;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 15px;
+    font-size: 1rem;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    resize: vertical;
+    transition: border-color 0.3s;
+}
+
+textarea:focus {
+    border-color: #28a745;
+    outline: none;
 }
 
 /* Botões */
 button {
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 12px 24px;
+    font-size: 1rem;
     background-color: #28a745;
     color: white;
     border: none;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 8px;
     margin: 5px;
-    transition: background 0.3s;
+    transition: background 0.3s, transform 0.2s;
 }
 
 button:hover {
     background-color: #218838;
+    transform: translateY(-2px);
 }
 
-/* Estilo do Código Gerado */
-pre {
-    background-color: #222;
-    color: #00ff00;
-    padding: 15px;
-    width: 100%;
-    text-align: left;
-    white-space: pre-wrap;
-    border-radius: 5px;
-    font-family: monospace;
-    overflow-x: auto;
+button:active {
+    transform: translateY(0);
 }
 
 /* Botões Específicos */
@@ -185,25 +121,92 @@ pre {
     background-color: #e68900;
 }
 
-/* Responsividade */
-@media (max-width: 768px) {
-    .container, .output-container {
-        width: 95%;
-    }
+/* Estilo do Código Gerado */
+pre {
+    background-color: #222;
+    color: #00ff00;
+    padding: 20px;
+    border-radius: 8px;
+    font-family: 'Courier New', Courier, monospace;
+    overflow-x: auto;
+    text-align: left;
+    white-space: pre-wrap;
+    line-height: 1.5;
 }
 
+/* Rodapé */
+footer {
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    margin-top: 40px;
+    border-top: 3px solid #28a745;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+footer a {
+    color: #28a745;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+footer a:hover {
+    color: #218838;
+}
+
+footer strong {
+    font-weight: bold;
+    color: #f4f4f4;
+}
 /* Modo Escuro */
 .dark-mode {
+    background-color: #1a1a1a;
+    color: #f4f4f4;
+}
+
+.dark-mode header, .dark-mode footer {
     background-color: #222;
-    color: white;
+    border-color: #28a745;
 }
 
 .dark-mode .container, .dark-mode .output-container {
     background-color: #333;
-    color: white;
+    color: #f4f4f4;
+}
+
+.dark-mode textarea {
+    background-color: #444;
+    color: #f4f4f4;
+    border-color: #555;
 }
 
 .dark-mode pre {
-    background-color: black;
+    background-color: #111;
     color: #00ff00;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .container, .output-container {
+        width: 95%;
+        padding: 15px;
+    }
+
+    textarea {
+        height: 150px;
+    }
+
+    button {
+        width: 100%;
+        margin: 5px 0;
+    }
 }
