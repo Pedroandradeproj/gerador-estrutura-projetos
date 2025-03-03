@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const API_URL = "/gerar-estrutura";
+    const API_URL = "https://gerador-estrutura-projetos-nrk2.onrender.com/";
     const toastContainer = document.createElement("div");
     toastContainer.id = "toastContainer";
+    
     document.body.appendChild(toastContainer);
 
     function showToast(message, success = true) {
