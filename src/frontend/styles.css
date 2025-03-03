@@ -120,6 +120,15 @@ button:active {
 #downloadBtn:hover {
     background-color: #e68900;
 }
+/* Estilo do botão de baixar estrutura */
+
+#downloadStructureBtn {
+    background-color: #9c27b0;
+}
+
+#downloadStructureBtn:hover {
+    background-color: #7b1fa2;
+}
 
 /* Estilo do Código Gerado */
 pre {

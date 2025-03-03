@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
         showToast("Modo " + (document.body.classList.contains("dark-mode") ? "Escuro" : "Claro") + " ativado");
     });
 
+    // Gerar código
     document.getElementById("generateBtn").addEventListener("click", async function(event) {
         event.preventDefault();
         const inputText = document.getElementById("inputText").value;
@@ -49,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    // Copiar código
     document.getElementById("copyBtn").addEventListener("click", function() {
         const outputCode = document.getElementById("outputCode").textContent;
         if (!outputCode.trim()) {
@@ -61,6 +63,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .catch(err => showToast("❌ Erro ao copiar código: " + err, false));
     });
 
+    // Baixar código
     document.getElementById("downloadBtn").addEventListener("click", function() {
         const outputCode = document.getElementById("outputCode").textContent;
         if (!outputCode.trim()) {
@@ -77,5 +80,39 @@ document.addEventListener("DOMContentLoaded", function() {
         document.body.removeChild(link);
 
         showToast("📥 Download iniciado com sucesso!");
+    });
+
+    // Baixar estrutura pronta
+    document.getElementById("downloadStructureBtn").addEventListener("click", async function() {
+        const inputText = document.getElementById("inputText").value;
+
+        if (!inputText.trim()) {
+            showToast("⚠️ Por favor, digite uma estrutura antes de baixar!", false);
+            return;
+        }
+
+        try {
+            const response = await fetch("/baixar-estrutura", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ estrutura: inputText })
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "estrutura.zip";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast("📥 Estrutura baixada com sucesso!");
+            } else {
+                const data = await response.json();
+                showToast("❌ Erro ao baixar estrutura:\n" + (data.erro || "Erro desconhecido."), false);
+            }
+        } catch (error) {
+            showToast("🚨 Erro ao conectar com o servidor!", false);
+        }
     });
 });
