@@ -1,14 +1,8 @@
-from flask import Flask, request, jsonify, send_file
-from flask_cors import CORS
-import tempfile
-import zipfile
-import os
-from pathlib import Path
-
 import sys
 import os
-from flask import Flask, request, jsonify, send_from_directory, render_template
-
+import tempfile
+import zipfile
+from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
 
 # ✅ Garante que o diretório `src/` seja reconhecido pelo Python
@@ -32,24 +26,36 @@ def serve_frontend():
 def serve_static_files(path):
     return send_from_directory(app.static_folder, path)
 
-
+# 🔹 Rota para gerar estrutura de projeto
 @app.route("/gerar-estrutura", methods=["POST"])
 def gerar_estrutura():
-    if not request.is_json:
-        return jsonify({"erro": "O corpo da requisição deve ser JSON"}), 415
+    if request.method == "GET":
+        return jsonify({"erro": "Método GET não é permitido. Use POST."}), 405
 
-    data = request.get_json()
-    input_text = data.get("estrutura", "")
+    if request.content_type != "application/json":
+        return jsonify({"erro": "O cabeçalho Content-Type deve ser application/json"}), 415
 
-    # Processa a estrutura usando os módulos do backend
-    analyzer = StructureAnalyzer(input_text)
-    estrutura = analyzer.get_structure()
+    try:
+        data = request.get_json(force=True)
+        if not data:
+            return jsonify({"erro": "O corpo da requisição está vazio ou inválido"}), 400
 
-    generator = CodeGenerator(estrutura)
-    codigo_gerado = generator.generate_code()
+        input_text = data.get("estrutura", "")
+        if not input_text:
+            return jsonify({"erro": "O campo 'estrutura' é obrigatório"}), 400
 
-    return jsonify({"codigo": codigo_gerado})
+        analyzer = StructureAnalyzer(input_text)
+        estrutura = analyzer.get_structure()
 
+        generator = CodeGenerator(estrutura)
+        codigo_gerado = generator.generate_code()
+
+        return jsonify({"codigo": codigo_gerado})
+
+    except Exception as e:
+        return jsonify({"erro": f"Erro interno: {str(e)}"}), 500
+
+# 🔹 Rota para baixar estrutura gerada como um arquivo .zip
 @app.route("/baixar-estrutura", methods=["POST"])
 def baixar_estrutura():
     if not request.is_json:
@@ -79,5 +85,6 @@ def baixar_estrutura():
     # Envia o arquivo .zip para o cliente
     return send_file(zip_path, as_attachment=True, download_name="estrutura.zip")
 
+# 🔹 Iniciar servidor no modo produção
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=10000, debug=True)

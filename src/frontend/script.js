@@ -1,8 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const API_URL = "https://gerador-estrutura-projetos-nrk2.onrender.com/";
+    const API_URL = "/gerar-estrutura";
     const toastContainer = document.createElement("div");
     toastContainer.id = "toastContainer";
-    
     document.body.appendChild(toastContainer);
 
     function showToast(message, success = true) {
@@ -22,7 +21,6 @@ document.addEventListener("DOMContentLoaded", function() {
         showToast("Modo " + (document.body.classList.contains("dark-mode") ? "Escuro" : "Claro") + " ativado");
     });
 
-    // Gerar código
     document.getElementById("generateBtn").addEventListener("click", async function(event) {
         event.preventDefault();
         const inputText = document.getElementById("inputText").value;
@@ -50,39 +48,6 @@ document.addEventListener("DOMContentLoaded", function() {
             showToast("🚨 Erro ao conectar com o servidor!", false);
         }
     });
-
-    // Copiar código
-    document.getElementById("copyBtn").addEventListener("click", function() {
-        const outputCode = document.getElementById("outputCode").textContent;
-        if (!outputCode.trim()) {
-            showToast("⚠️ Nenhum código gerado para copiar!", false);
-            return;
-        }
-
-        navigator.clipboard.writeText(outputCode)
-            .then(() => showToast("✅ Código copiado para a área de transferência!"))
-            .catch(err => showToast("❌ Erro ao copiar código: " + err, false));
-    });
-
-    // Baixar código
-    document.getElementById("downloadBtn").addEventListener("click", function() {
-        const outputCode = document.getElementById("outputCode").textContent;
-        if (!outputCode.trim()) {
-            showToast("⚠️ Nenhum código gerado para baixar!", false);
-            return;
-        }
-
-        const blob = new Blob([outputCode], { type: "text/plain" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "gerar_estrutura.py";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        showToast("📥 Download iniciado com sucesso!");
-    });
-
     // Baixar estrutura pronta
     document.getElementById("downloadStructureBtn").addEventListener("click", async function() {
         const inputText = document.getElementById("inputText").value;
@@ -115,5 +80,35 @@ document.addEventListener("DOMContentLoaded", function() {
         } catch (error) {
             showToast("🚨 Erro ao conectar com o servidor!", false);
         }
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", function() {
+        const outputCode = document.getElementById("outputCode").textContent;
+        if (!outputCode.trim()) {
+            showToast("⚠️ Nenhum código gerado para copiar!", false);
+            return;
+        }
+
+        navigator.clipboard.writeText(outputCode)
+            .then(() => showToast("✅ Código copiado para a área de transferência!"))
+            .catch(err => showToast("❌ Erro ao copiar código: " + err, false));
+    });
+
+    document.getElementById("downloadBtn").addEventListener("click", function() {
+        const outputCode = document.getElementById("outputCode").textContent;
+        if (!outputCode.trim()) {
+            showToast("⚠️ Nenhum código gerado para baixar!", false);
+            return;
+        }
+
+        const blob = new Blob([outputCode], { type: "text/plain" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "gerar_estrutura.py";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        showToast("📥 Download iniciado com sucesso!");
     });
 });
