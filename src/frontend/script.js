@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.body.appendChild(toastContainer);
 
     function showToast(message, success = true) {
+        console.log('Toast message:', message);  // Verifique a mensagem que está sendo exibida
         const toast = document.createElement("div");
         toast.className = "toast " + (success ? "success-toast" : "error-toast");
         toast.innerText = message;
@@ -31,6 +32,8 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
+        console.log('Estrutura enviada:', inputText);  // Verifique o conteúdo de inputText antes de enviar
+
         try {
             const response = await fetch(API_URL, {  
                 method: "POST",
@@ -38,7 +41,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 body: JSON.stringify({ estrutura: inputText })
             });
 
-            const data = await response.json();
+            const data = await response.json().catch((err) => {
+                console.error("Erro ao converter a resposta para JSON:", err);
+                return {};  // Retorna um objeto vazio se a conversão falhar
+            });
+
+            console.log('Resposta da API:', data);  // Verifique a resposta da API
+
             if (response.ok) {
                 document.getElementById("outputCode").textContent = data.codigo.replace(/\n/g, "\n");
                 showToast("✅ Código gerado com sucesso!");
@@ -46,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 showToast("❌ Erro ao gerar código:\n" + (data.erro || "Erro desconhecido."), false);
             }
         } catch (error) {
+            console.error("Erro na requisição:", error);
             showToast("🚨 Erro ao conectar com o servidor!", false);
         }
     });
@@ -80,7 +90,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 showToast("❌ Erro ao baixar estrutura:\n" + (data.erro || "Erro desconhecido."), false);
             }
         } catch (error) {
-            showToast("🚨 Erro ao conectar com o servidor!", false);
+            console.error("Erro na requisição de download:", error);
+            showToast("🚨 Erro ao conectar com o servidor para baixar a estrutura!", false);
         }
     });
 
@@ -94,7 +105,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
         navigator.clipboard.writeText(outputCode)
             .then(() => showToast("✅ Código copiado para a área de transferência!"))
-            .catch(err => showToast("❌ Erro ao copiar código: " + err, false));
+            .catch(err => {
+                console.error("Erro ao copiar código:", err);
+                showToast("❌ Erro ao copiar código: " + err, false);
+            });
     });
 
     // Baixar o código gerado como arquivo
