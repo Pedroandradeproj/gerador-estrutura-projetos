@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const API_URL = "/gerar-estrutura";  // Verifique se esta URL está correta e é suportada no servidor
+    const API_URL = "/gerar-estrutura";
     const toastContainer = document.createElement("div");
     toastContainer.id = "toastContainer";
     document.body.appendChild(toastContainer);
@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
         showToast("Modo " + (document.body.classList.contains("dark-mode") ? "Escuro" : "Claro") + " ativado");
     });
 
+    // Geração do código
     document.getElementById("generateBtn").addEventListener("click", async function(event) {
         event.preventDefault();
         const inputText = document.getElementById("inputText").value;
@@ -49,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Baixar estrutura pronta
+    // Baixar a estrutura pronta
     document.getElementById("downloadStructureBtn").addEventListener("click", async function() {
         const inputText = document.getElementById("inputText").value;
 
@@ -59,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         try {
-            const response = await fetch("/baixar-estrutura", {  // Verifique se esta URL está correta no servidor
+            const response = await fetch("/baixar-estrutura", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ estrutura: inputText })
@@ -83,6 +84,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    // Copiar o código gerado
     document.getElementById("copyBtn").addEventListener("click", function() {
         const outputCode = document.getElementById("outputCode").textContent;
         if (!outputCode.trim()) {
@@ -95,6 +97,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .catch(err => showToast("❌ Erro ao copiar código: " + err, false));
     });
 
+    // Baixar o código gerado como arquivo
     document.getElementById("downloadBtn").addEventListener("click", function() {
         const outputCode = document.getElementById("outputCode").textContent;
         if (!outputCode.trim()) {
