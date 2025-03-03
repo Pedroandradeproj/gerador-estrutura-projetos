@@ -1,17 +1,9 @@
-import sys
-import os
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import tempfile
 import zipfile
+import os
 from pathlib import Path
-
-# ✅ Garante que o diretório `src/` seja reconhecido pelo Python
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-
-# ✅ Importa corretamente os módulos dentro de `backend/`
-from src.backend.analyzer import StructureAnalyzer
-from src.backend.generator import CodeGenerator
 
 app = Flask(__name__)
 CORS(app)  # Permite requisições de diferentes origens
@@ -21,7 +13,7 @@ def gerar_estrutura():
     if not request.is_json:
         return jsonify({"erro": "O corpo da requisição deve ser JSON"}), 415
 
-    data = request.get_json()  # Obtém os dados JSON do request
+    data = request.get_json()
     input_text = data.get("estrutura", "")
 
     # Processa a estrutura usando os módulos do backend
