@@ -21,7 +21,8 @@ class CodeGenerator:
         created_dirs = {base_folder}  # Mantém controle das pastas já criadas
 
         for item in self.structure[1:]:  # Ignora a primeira linha, pois já criamos a raiz
-            relative_path = item["path"].replace(f"{base_folder}/", "", 1).lstrip("/")
+            # Usando Path().relative_to() para uma abordagem mais segura
+            relative_path = Path(item["path"]).relative_to(base_folder).as_posix()
             path = f'Path(base_path / "{relative_path}")'  # ✅ Garante que `Path()` seja aplicado corretamente
 
             if item["type"] == "folder":
