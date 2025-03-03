@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const API_URL = "/gerar-estrutura";
+    const API_URL = "/gerar-estrutura";  // Verifique se esta URL está correta e é suportada no servidor
     const toastContainer = document.createElement("div");
     toastContainer.id = "toastContainer";
     document.body.appendChild(toastContainer);
@@ -48,6 +48,7 @@ document.addEventListener("DOMContentLoaded", function() {
             showToast("🚨 Erro ao conectar com o servidor!", false);
         }
     });
+
     // Baixar estrutura pronta
     document.getElementById("downloadStructureBtn").addEventListener("click", async function() {
         const inputText = document.getElementById("inputText").value;
@@ -58,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         try {
-            const response = await fetch("/baixar-estrutura", {
+            const response = await fetch("/baixar-estrutura", {  // Verifique se esta URL está correta no servidor
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ estrutura: inputText })
