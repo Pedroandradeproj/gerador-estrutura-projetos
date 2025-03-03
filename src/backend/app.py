@@ -5,8 +5,33 @@ import zipfile
 import os
 from pathlib import Path
 
-app = Flask(__name__)
+import sys
+import os
+from flask import Flask, request, jsonify, send_from_directory, render_template
+
+from flask_cors import CORS
+
+# ✅ Garante que o diretório `src/` seja reconhecido pelo Python
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+# ✅ Importa corretamente os módulos dentro de `backend/`
+from src.backend.analyzer import StructureAnalyzer
+from src.backend.generator import CodeGenerator
+
+app = Flask(__name__, static_folder="../frontend", static_url_path="/")
+
 CORS(app)  # Permite requisições de diferentes origens
+
+# 🔹 Servir o frontend (HTML) ao acessar "/"
+@app.route("/")
+def serve_frontend():
+    return send_from_directory(app.static_folder, "index.html")
+
+# 🔹 Servir arquivos estáticos (CSS, JS, imagens)
+@app.route("/<path:path>")
+def serve_static_files(path):
+    return send_from_directory(app.static_folder, path)
+
 
 @app.route("/gerar-estrutura", methods=["POST"])
 def gerar_estrutura():
