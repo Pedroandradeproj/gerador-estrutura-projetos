@@ -22,7 +22,7 @@ class CodeGenerator:
 
         for item in self.structure[1:]:  # Ignora a primeira linha, pois já criamos a raiz
             relative_path = item["path"].replace(f"{base_folder}/", "", 1).lstrip("/")
-            path = f'Path(base_path / "{relative_path}")'  # ✅ Garante que `Path()` seja aplicado corretamente
+            path = f'Path(base_path / "{relative_path}")'  # ✅ Garante que Path() seja aplicado corretamente
 
             if item["type"] == "folder":
                 if relative_path not in created_dirs:

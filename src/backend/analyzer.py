@@ -47,7 +47,7 @@ class StructureAnalyzer:
             full_path = f"{parent_path}/{clean_line}".replace("//", "/").rstrip("/")
 
             # Detecta se é um **arquivo** ou uma **pasta** corretamente
-            if clean_line.endswith("/") or "." not in clean_line:  # Se termina com `/` ou **não tem extensão**, é pasta
+            if clean_line.endswith("/") or "." not in clean_line:  # Se termina com / ou **não tem extensão**, é pasta
                 stack.append((indent_level, full_path))
                 structure.append({"type": "folder", "path": full_path})
             else:  # Se tem extensão, é um arquivo
