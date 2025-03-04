@@ -5,14 +5,15 @@ import zipfile
 from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
 
-# ✅ Garante que o diretório `src/` seja reconhecido pelo Python
+# ✅ Garante que o diretório src/ seja reconhecido pelo Python
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-# ✅ Importa corretamente os módulos dentro de `backend/`
+# ✅ Importa corretamente os módulos dentro de backend/
 from src.backend.analyzer import StructureAnalyzer
 from src.backend.generator import CodeGenerator
 
 app = Flask(__name__, static_folder="../frontend", static_url_path="/")
+
 CORS(app)  # Permite requisições de diferentes origens
 
 # 🔹 Servir o frontend (HTML) ao acessar "/"
@@ -74,12 +75,12 @@ def baixar_estrutura():
 
         # Cria a estrutura em um diretório temporário
         temp_dir = tempfile.mkdtemp()
-        generator.create_structure(temp_dir)  # 🔹 Garante que os arquivos sejam criados
+        generator.create_structure()  # Removido o argumento 'base_path'
 
         # Compacta a estrutura
         zip_path = os.path.join(temp_dir, "estrutura.zip")
-        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            for root, _, files in os.walk(temp_dir):
+        with zipfile.ZipFile(zip_path, 'w') as zipf:
+            for root, dirs, files in os.walk(temp_dir):
                 for file in files:
                     file_path = os.path.join(root, file)
                     arcname = os.path.relpath(file_path, temp_dir)
