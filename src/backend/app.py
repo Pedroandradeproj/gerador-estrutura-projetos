@@ -75,18 +75,34 @@ def baixar_estrutura():
 
         # Cria a estrutura em um diretório temporário
         temp_dir = tempfile.mkdtemp()
-        generator.create_structure()  # Removido o argumento 'base_path'
+        generator.create_structure(temp_dir)  # ✅ Passa o caminho da pasta temporária
 
-        # Compacta a estrutura
+        # 🔹 Teste para verificar se a estrutura está sendo criada corretamente
+        test_file_path = os.path.join(temp_dir, "teste_estrutura.txt")
+        with open(test_file_path, "w") as f:
+            f.write("Este é um arquivo de teste para verificar a criação da estrutura.")
+
+        # 🔹 Verifica se há arquivos na pasta antes da compactação
+        arquivos_antes = os.listdir(temp_dir)
+        print("📁 Arquivos antes da compactação:", arquivos_antes)
+
+        if not arquivos_antes:
+            return jsonify({"erro": "Nenhum arquivo foi gerado dentro da estrutura"}), 500
+
+        # 🔹 Compacta a estrutura
         zip_path = os.path.join(temp_dir, "estrutura.zip")
-        with zipfile.ZipFile(zip_path, 'w') as zipf:
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for root, dirs, files in os.walk(temp_dir):
                 for file in files:
                     file_path = os.path.join(root, file)
                     arcname = os.path.relpath(file_path, temp_dir)
                     zipf.write(file_path, arcname)
 
-        # Envia o arquivo .zip para o cliente
+        # 🔹 Verifica se o .zip foi criado corretamente
+        if not os.path.exists(zip_path):
+            return jsonify({"erro": "Erro ao criar o arquivo ZIP"}), 500
+
+        # 🔹 Envia o arquivo .zip para o cliente
         return send_file(zip_path, as_attachment=True, download_name="estrutura.zip")
 
     except Exception as e:
