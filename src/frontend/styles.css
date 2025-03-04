@@ -123,11 +123,11 @@ button:active {
 /* Estilo do botão de baixar estrutura */
 
 #downloadStructureBtn {
-    background-color: #9c27b0;
+    background-color: #4caf50; /* Verde mais claro */
 }
 
 #downloadStructureBtn:hover {
-    background-color: #7b1fa2;
+    background-color: #388e3c; /* Verde mais escuro */
 }
 
 /* Estilo do Código Gerado */
