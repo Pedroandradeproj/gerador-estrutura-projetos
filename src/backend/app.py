@@ -90,6 +90,13 @@ def baixar_estrutura():
                     arcname = os.path.relpath(file_path, temp_dir)
                     zipf.write(file_path, arcname)
 
+            # Remover pastas vazias (caso tenha alguma) da estrutura ZIP
+            for root, dirs, files in os.walk(temp_dir):
+                for dir in dirs:
+                    dir_path = os.path.join(root, dir)
+                    if not os.listdir(dir_path):  # Verifica se a pasta está vazia
+                        os.rmdir(dir_path)  # Remove a pasta vazia
+
         # Envia o arquivo .zip para o cliente
         return send_file(zip_path, as_attachment=True, download_name="estrutura.zip")
 
