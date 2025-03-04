@@ -18,12 +18,16 @@ def create_zip_structure(source_folder, zip_filename):
         if not any(os.scandir(source_folder)):
             raise ValueError(f'A pasta {source_folder} está vazia.')
 
-        # Caminho absoluto para o ZIP
+        # Caminho absoluto do arquivo ZIP
         zip_path = os.path.abspath(zip_filename)
 
+        # Garante que o arquivo ZIP não esteja dentro da pasta a ser compactada
+        if zip_path.startswith(os.path.abspath(source_folder)):
+            raise ValueError("O arquivo ZIP de destino não pode estar dentro da pasta a ser compactada.")
+
         # Cria o arquivo ZIP
-        with zipfile.ZipFile(zip_path, 'w') as zipf:
-            for root, dirs, files in os.walk(source_folder):
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for root, _, files in os.walk(source_folder):
                 for file in files:
                     file_path = os.path.join(root, file)
                     arcname = os.path.relpath(file_path, source_folder)
