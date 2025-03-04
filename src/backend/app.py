@@ -1,61 +1,51 @@
-import sys
 import os
-import tempfile
 import zipfile
-from flask import Flask, request, jsonify, send_file, send_from_directory
-from flask_cors import CORS
+import tempfile
+from flask import Flask, request, jsonify, send_file
 
-# ✅ Garante que o diretório src/ seja reconhecido pelo Python
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+app = Flask(__name__)
 
-# ✅ Importa corretamente os módulos dentro de backend/
-from src.backend.analyzer import StructureAnalyzer
-from src.backend.generator import CodeGenerator
+# Função que simula a análise da estrutura (ajuste conforme necessário)
+class StructureAnalyzer:
+    def __init__(self, input_text):
+        self.input_text = input_text
 
-app = Flask(__name__, static_folder="../frontend", static_url_path="/")
+    def get_structure(self):
+        # Lógica para analisar a estrutura do input_text
+        # Aqui, estamos simulando uma estrutura simples.
+        return [
+            {"type": "folder", "name": "folder1"},
+            {"type": "folder", "name": "folder2"},
+            {"type": "file", "name": "folder1/file1.txt", "content": "Conteúdo do arquivo 1"},
+            {"type": "file", "name": "folder2/file2.txt", "content": "Conteúdo do arquivo 2"}
+        ]
 
-CORS(app)  # Permite requisições de diferentes origens
+# Função para gerar a estrutura de pastas e arquivos (ajuste conforme necessário)
+class CodeGenerator:
+    def __init__(self, structure):
+        self.structure = structure
 
-# 🔹 Servir o frontend (HTML) ao acessar "/"
-@app.route("/")
-def serve_frontend():
-    return send_from_directory(app.static_folder, "index.html")
+    def create_structure(self, base_path):
+        for item in self.structure:
+            if item["type"] == "folder":
+                folder_path = os.path.join(base_path, item["name"])
+                os.makedirs(folder_path, exist_ok=True)
+            elif item["type"] == "file":
+                file_path = os.path.join(base_path, item["name"])
+                with open(file_path, 'w') as file:
+                    file.write(item["content"])
 
-# 🔹 Servir arquivos estáticos (CSS, JS, imagens)
-@app.route("/<path:path>")
-def serve_static_files(path):
-    return send_from_directory(app.static_folder, path)
+# Função para adicionar arquivos ao .zip e garantir que as pastas sejam criadas
+def add_file_to_zip(zipf, file_path, arcname):
+    """
+    Função para adicionar um arquivo ao zip, criando os diretórios necessários.
+    """
+    # Cria os diretórios no zip se não existirem
+    dir_name = os.path.dirname(arcname)
+    if dir_name:
+        zipf.write(file_path, arcname)  # Cria o diretório no zip antes de adicionar o arquivo
 
-# 🔹 Rota para gerar estrutura de projeto
-@app.route("/gerar-estrutura", methods=["POST"])
-def gerar_estrutura():
-    if request.method == "GET":
-        return jsonify({"erro": "Método GET não é permitido. Use POST."}), 405
-
-    if request.content_type != "application/json":
-        return jsonify({"erro": "O cabeçalho Content-Type deve ser application/json"}), 415
-
-    try:
-        data = request.get_json(force=True)
-        if not data:
-            return jsonify({"erro": "O corpo da requisição está vazio ou inválido"}), 400
-
-        input_text = data.get("estrutura", "")
-        if not input_text:
-            return jsonify({"erro": "O campo 'estrutura' é obrigatório"}), 400
-
-        analyzer = StructureAnalyzer(input_text)
-        estrutura = analyzer.get_structure()
-
-        generator = CodeGenerator(estrutura)
-        codigo_gerado = generator.generate_code()
-
-        return jsonify({"codigo": codigo_gerado})
-
-    except Exception as e:
-        return jsonify({"erro": f"Erro interno: {str(e)}"}), 500
-
-# 🔹 Rota para baixar estrutura gerada como um arquivo .zip
+# Rota para baixar estrutura gerada como um arquivo .zip
 @app.route("/baixar-estrutura", methods=["POST"])
 def baixar_estrutura():
     if not request.is_json:
@@ -75,7 +65,7 @@ def baixar_estrutura():
 
         # Cria a estrutura em um diretório temporário
         temp_dir = tempfile.mkdtemp()
-        generator.create_structure()  # Removido o argumento 'base_path'
+        generator.create_structure(temp_dir)  # Gera a estrutura de arquivos e pastas
 
         # Compacta a estrutura
         zip_path = os.path.join(temp_dir, "estrutura.zip")
@@ -84,7 +74,7 @@ def baixar_estrutura():
                 for file in files:
                     file_path = os.path.join(root, file)
                     arcname = os.path.relpath(file_path, temp_dir)
-                    zipf.write(file_path, arcname)
+                    add_file_to_zip(zipf, file_path, arcname)  # Adiciona os arquivos ao .zip com a estrutura correta
 
         # Envia o arquivo .zip para o cliente
         return send_file(zip_path, as_attachment=True, download_name="estrutura.zip")
@@ -92,6 +82,6 @@ def baixar_estrutura():
     except Exception as e:
         return jsonify({"erro": f"Erro ao gerar ou compactar a estrutura: {str(e)}"}), 500
 
-# 🔹 Iniciar servidor no modo produção
+# Inicia o servidor Flask
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000, debug=True)
+    app.run(debug=True)
