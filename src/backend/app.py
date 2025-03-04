@@ -4,7 +4,6 @@ import tempfile
 import zipfile
 from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
-from pathlib import Path
 
 # ✅ Garante que o diretório `src/` seja reconhecido pelo Python
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -65,35 +64,33 @@ def baixar_estrutura():
     data = request.get_json()
     input_text = data.get("estrutura", "")
 
-    # Analisa e gera a estrutura
-    analyzer = StructureAnalyzer(input_text)
-    estrutura = analyzer.get_structure()
-    generator = CodeGenerator(estrutura)
+    if not input_text:
+        return jsonify({"erro": "O campo 'estrutura' é obrigatório"}), 400
 
-    # Cria a estrutura em um diretório temporário
-    temp_dir = tempfile.mkdtemp()
-    generator.create_structure(base_path=temp_dir)  # Usando o método create_structure
-
-    # Compacta a estrutura
-    zip_path = os.path.join(temp_dir, "estrutura.zip")
-    with zipfile.ZipFile(zip_path, 'w') as zipf:
-        for root, dirs, files in os.walk(temp_dir):
-            for file in files:
-                file_path = os.path.join(root, file)
-                arcname = os.path.relpath(file_path, temp_dir)
-                zipf.write(file_path, arcname)
-
-    # Envia o arquivo .zip para o cliente
     try:
+        # Analisa e gera a estrutura
+        analyzer = StructureAnalyzer(input_text)
+        estrutura = analyzer.get_structure()
+        generator = CodeGenerator(estrutura)
+
+        # Cria a estrutura em um diretório temporário
+        temp_dir = tempfile.mkdtemp()
+        generator.create_structure(base_path=temp_dir)  # Usando o método create_structure
+
+        # Compacta a estrutura
+        zip_path = os.path.join(temp_dir, "estrutura.zip")
+        with zipfile.ZipFile(zip_path, 'w') as zipf:
+            for root, dirs, files in os.walk(temp_dir):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    arcname = os.path.relpath(file_path, temp_dir)
+                    zipf.write(file_path, arcname)
+
+        # Envia o arquivo .zip para o cliente
         return send_file(zip_path, as_attachment=True, download_name="estrutura.zip")
-    finally:
-        # Limpeza do diretório temporário após o envio
-        for root, dirs, files in os.walk(temp_dir, topdown=False):
-            for name in files:
-                os.remove(os.path.join(root, name))
-            for name in dirs:
-                os.rmdir(os.path.join(root, name))
-        os.rmdir(temp_dir)
+
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao gerar ou compactar a estrutura: {str(e)}"}), 500
 
 # 🔹 Iniciar servidor no modo produção
 if __name__ == "__main__":
