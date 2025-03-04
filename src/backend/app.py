@@ -13,7 +13,6 @@ from src.backend.analyzer import StructureAnalyzer
 from src.backend.generator import CodeGenerator
 
 app = Flask(__name__, static_folder="../frontend", static_url_path="/")
-
 CORS(app)  # Permite requisições de diferentes origens
 
 # 🔹 Servir o frontend (HTML) ao acessar "/"
@@ -29,9 +28,6 @@ def serve_static_files(path):
 # 🔹 Rota para gerar estrutura de projeto
 @app.route("/gerar-estrutura", methods=["POST"])
 def gerar_estrutura():
-    if request.method == "GET":
-        return jsonify({"erro": "Método GET não é permitido. Use POST."}), 405
-
     if request.content_type != "application/json":
         return jsonify({"erro": "O cabeçalho Content-Type deve ser application/json"}), 415
 
@@ -46,7 +42,6 @@ def gerar_estrutura():
 
         analyzer = StructureAnalyzer(input_text)
         estrutura = analyzer.get_structure()
-
         generator = CodeGenerator(estrutura)
         codigo_gerado = generator.generate_code()
 
@@ -68,41 +63,27 @@ def baixar_estrutura():
         return jsonify({"erro": "O campo 'estrutura' é obrigatório"}), 400
 
     try:
-        # Analisa e gera a estrutura
         analyzer = StructureAnalyzer(input_text)
         estrutura = analyzer.get_structure()
         generator = CodeGenerator(estrutura)
 
-        # Cria a estrutura em um diretório temporário
+        # Criar diretório temporário
         temp_dir = tempfile.mkdtemp()
-        generator.create_structure(temp_dir)  # ✅ Passa o caminho da pasta temporária
+        output_dir = os.path.join(temp_dir, "projeto")
+        os.makedirs(output_dir, exist_ok=True)
 
-        # 🔹 Teste para verificar se a estrutura está sendo criada corretamente
-        test_file_path = os.path.join(temp_dir, "teste_estrutura.txt")
-        with open(test_file_path, "w") as f:
-            f.write("Este é um arquivo de teste para verificar a criação da estrutura.")
+        # Gerar a estrutura dentro do diretório correto
+        generator.create_structure(output_dir)
 
-        # 🔹 Verifica se há arquivos na pasta antes da compactação
-        arquivos_antes = os.listdir(temp_dir)
-        print("📁 Arquivos antes da compactação:", arquivos_antes)
-
-        if not arquivos_antes:
-            return jsonify({"erro": "Nenhum arquivo foi gerado dentro da estrutura"}), 500
-
-        # 🔹 Compacta a estrutura
+        # Compactar estrutura gerada
         zip_path = os.path.join(temp_dir, "estrutura.zip")
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            for root, dirs, files in os.walk(temp_dir):
+            for root, _, files in os.walk(output_dir):
                 for file in files:
                     file_path = os.path.join(root, file)
-                    arcname = os.path.relpath(file_path, temp_dir)
+                    arcname = os.path.relpath(file_path, output_dir)
                     zipf.write(file_path, arcname)
 
-        # 🔹 Verifica se o .zip foi criado corretamente
-        if not os.path.exists(zip_path):
-            return jsonify({"erro": "Erro ao criar o arquivo ZIP"}), 500
-
-        # 🔹 Envia o arquivo .zip para o cliente
         return send_file(zip_path, as_attachment=True, download_name="estrutura.zip")
 
     except Exception as e:
