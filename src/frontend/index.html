@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Estrutura</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header>
+        <h1>Gerador de Estrutura</h1>
+        <button id="toggleTheme">Alternar Tema</button> <!-- 🔹 Botão para Modo Claro/Escuro -->
+    </header>
+
+    <main>
+        <section class="container">
+            <h2>Insira a Estrutura</h2>
+            <textarea id="inputText" placeholder="Digite a estrutura do projeto aqui..."></textarea>
+            <button id="generateBtn">Gerar Estrutura</button>
+        </section>
+
+        <section class="output-container">
+            <h2>Saída do Código Gerado</h2>
+            <pre id="outputCode"></pre>
+            <button id="copyBtn">Copiar Código</button>
+            <button id="downloadBtn">Baixar Código</button>
+            <button id="downloadStructureBtn">Baixar Estrutura Pronta</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 <strong>Gerador de Estrutura</strong>. Todos os direitos reservados.</p>
+        <p>
+            Desenvolvido por <a href="https://www.linkedin.com/in/pedro-andrade-914795223" target="_blank" rel="noopener noreferrer">Pedro Andrade</a> | 
+            <a href="https://github.com/Pedroandradeproj/gerador-estrutura-projetos" target="_blank" rel="noopener noreferrer">Repositório no GitHub</a>
+        </p>
+    </footer>
+
+    <!-- 🔹 Importando JavaScript -->
+    <script src="script.js"></script>
+
+</body>
+</html>
