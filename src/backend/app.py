@@ -77,6 +77,10 @@ def baixar_estrutura():
         temp_dir = tempfile.mkdtemp()
         generator.create_structure(temp_dir)  # Passa o temp_dir para a criação
 
+        # Verifica se há arquivos no diretório temporário antes de compactar
+        if not any(os.scandir(temp_dir)):  # Verifica se o diretório está vazio
+            raise ValueError("A estrutura gerada está vazia.")
+
         # Compacta a estrutura gerada no diretório temporário
         zip_path = os.path.join(temp_dir, "estrutura.zip")
         with zipfile.ZipFile(zip_path, 'w') as zipf:
