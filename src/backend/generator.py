@@ -47,6 +47,7 @@ class CodeGenerator:
         """
         Cria a estrutura de pastas e arquivos diretamente no sistema de arquivos.
         """
+        # Obtém a pasta raiz do projeto a partir da primeira linha da estrutura
         base_folder = self.structure[0]["path"].strip("/")
         base_path = Path.cwd() / base_folder
 
