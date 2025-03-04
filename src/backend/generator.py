@@ -1,77 +1,97 @@
-from pathlib import Path
+import sys
+import os
+import tempfile
+import zipfile
+from flask import Flask, request, jsonify, send_file, send_from_directory
+from flask_cors import CORS
 
-class CodeGenerator:
-    def __init__(self, structure):
-        self.structure = structure
+# ✅ Garante que o diretório `src/` seja reconhecido pelo Python
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-    def generate_code(self):
-        """
-        Gera o código Python para criar a estrutura de pastas e arquivos corretamente aninhada.
-        """
-        code_lines = ["from pathlib import Path", ""]
+# ✅ Importa corretamente os módulos dentro de `backend/`
+from src.backend.analyzer import StructureAnalyzer
+from src.backend.generator import CodeGenerator
 
-        # Obtém a pasta raiz do projeto a partir da primeira linha da estrutura
-        base_folder = self.structure[0]["path"].strip("/")
-        code_lines.append(f"base_path = Path.cwd() / '{base_folder}'")
+app = Flask(__name__, static_folder="../frontend", static_url_path="/")
 
-        # Garante que a pasta principal só seja criada uma vez
-        code_lines.append("if not base_path.exists():")
-        code_lines.append("    base_path.mkdir(parents=True, exist_ok=True)")
+CORS(app)  # Permite requisições de diferentes origens
 
-        created_dirs = {base_folder}  # Mantém controle das pastas já criadas
+# 🔹 Servir o frontend (HTML) ao acessar "/"
+@app.route("/")
+def serve_frontend():
+    return send_from_directory(app.static_folder, "index.html")
 
-        for item in self.structure[1:]:  # Ignora a primeira linha, pois já criamos a raiz
-            relative_path = item["path"].replace(f"{base_folder}/", "", 1).lstrip("/")
-            path = f'Path(base_path / "{relative_path}")'  # ✅ Garante que `Path()` seja aplicado corretamente
+# 🔹 Servir arquivos estáticos (CSS, JS, imagens)
+@app.route("/<path:path>")
+def serve_static_files(path):
+    return send_from_directory(app.static_folder, path)
 
-            if item["type"] == "folder":
-                if relative_path not in created_dirs:
-                    code_lines.append(f'if not {path}.exists():')
-                    code_lines.append(f'    {path}.mkdir(parents=True, exist_ok=True)')
-                    created_dirs.add(relative_path)
-            elif item["type"] == "file":
-                # Garante que a pasta pai do arquivo exista antes de criá-lo
-                parent_folder = "/".join(relative_path.split("/")[:-1])
-                if parent_folder and parent_folder not in created_dirs:
-                    parent_path = f'Path(base_path / "{parent_folder}")'
-                    code_lines.append(f'if not {parent_path}.exists():')
-                    code_lines.append(f'    {parent_path}.mkdir(parents=True, exist_ok=True)')
-                    created_dirs.add(parent_folder)
-                code_lines.append(f'if not {path}.exists():')
-                code_lines.append(f'    {path}.touch()')
+# 🔹 Rota para gerar estrutura de projeto
+@app.route("/gerar-estrutura", methods=["POST"])
+def gerar_estrutura():
+    if request.method == "GET":
+        return jsonify({"erro": "Método GET não é permitido. Use POST."}), 405
 
-        code_lines.append('\nprint(f"Estrutura criada com sucesso em: {base_path}")')
-        return "\n".join(code_lines)
+    if request.content_type != "application/json":
+        return jsonify({"erro": "O cabeçalho Content-Type deve ser application/json"}), 415
 
-    def create_structure(self):
-        """
-        Cria a estrutura de pastas e arquivos diretamente no sistema de arquivos.
-        """
-        # Obtém a pasta raiz do projeto a partir da primeira linha da estrutura
-        base_folder = self.structure[0]["path"].strip("/")
-        base_path = Path.cwd() / base_folder
+    try:
+        data = request.get_json(force=True)
+        if not data:
+            return jsonify({"erro": "O corpo da requisição está vazio ou inválido"}), 400
 
-        # Criação da pasta principal
-        if not base_path.exists():
-            base_path.mkdir(parents=True, exist_ok=True)
+        input_text = data.get("estrutura", "")
+        if not input_text:
+            return jsonify({"erro": "O campo 'estrutura' é obrigatório"}), 400
 
-        created_dirs = {base_folder}  # Mantém controle das pastas já criadas
+        analyzer = StructureAnalyzer(input_text)
+        estrutura = analyzer.get_structure()
 
-        for item in self.structure[1:]:
-            relative_path = item["path"].replace(f"{base_folder}/", "", 1).lstrip("/")
-            path = base_path / relative_path
+        generator = CodeGenerator(estrutura)
+        codigo_gerado = generator.generate_code()
 
-            if item["type"] == "folder":
-                if relative_path not in created_dirs:
-                    path.mkdir(parents=True, exist_ok=True)
-                    created_dirs.add(relative_path)
-            elif item["type"] == "file":
-                # Garante que a pasta pai do arquivo exista antes de criá-lo
-                parent_folder = "/".join(relative_path.split("/")[:-1])
-                if parent_folder and parent_folder not in created_dirs:
-                    parent_path = base_path / parent_folder
-                    parent_path.mkdir(parents=True, exist_ok=True)
-                    created_dirs.add(parent_folder)
-                path.touch()
+        return jsonify({"codigo": codigo_gerado})
 
-        print(f"Estrutura criada com sucesso em: {base_path}")
+    except Exception as e:
+        return jsonify({"erro": f"Erro interno: {str(e)}"}), 500
+
+# 🔹 Rota para baixar estrutura gerada como um arquivo .zip
+@app.route("/baixar-estrutura", methods=["POST"])
+def baixar_estrutura():
+    if not request.is_json:
+        return jsonify({"erro": "O corpo da requisição deve ser JSON"}), 415
+
+    data = request.get_json()
+    input_text = data.get("estrutura", "")
+
+    if not input_text:
+        return jsonify({"erro": "O campo 'estrutura' é obrigatório"}), 400
+
+    try:
+        # Analisa e gera a estrutura
+        analyzer = StructureAnalyzer(input_text)
+        estrutura = analyzer.get_structure()
+        generator = CodeGenerator(estrutura)
+
+        # Cria a estrutura em um diretório temporário
+        temp_dir = tempfile.mkdtemp()
+        generator.create_structure()  # Removendo o argumento 'base_path'
+
+        # Compacta a estrutura
+        zip_path = os.path.join(temp_dir, "estrutura.zip")
+        with zipfile.ZipFile(zip_path, 'w') as zipf:
+            for root, dirs, files in os.walk(temp_dir):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    arcname = os.path.relpath(file_path, temp_dir)
+                    zipf.write(file_path, arcname)
+
+        # Envia o arquivo .zip para o cliente
+        return send_file(zip_path, as_attachment=True, download_name="estrutura.zip")
+
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao gerar ou compactar a estrutura: {str(e)}"}), 500
+
+# 🔹 Iniciar servidor no modo produção
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000, debug=True)
