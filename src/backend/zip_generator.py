@@ -27,13 +27,31 @@ def create_zip_structure(source_folder, zip_filename):
 
         # Cria o arquivo ZIP
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            for root, _, files in os.walk(source_folder):
+            empty_folders = []  # Lista para rastrear pastas vazias
+            for root, dirs, files in os.walk(source_folder):
+                # Se não houver arquivos nem subpastas, adicionar à lista de pastas vazias
+                if not files and not dirs:
+                    empty_folders.append(root)
+                
                 for file in files:
                     file_path = os.path.join(root, file)
                     arcname = os.path.relpath(file_path, source_folder)
                     zipf.write(file_path, arcname)
 
-        print(f"Arquivo ZIP '{zip_filename}' criado com sucesso!")
+        # **Verifica se o ZIP contém pastas vazias**
+        if empty_folders:
+            print("⚠️ O ZIP contém pastas vazias. Removendo...")
+            with zipfile.ZipFile(zip_path, 'r') as zipf:
+                zip_contents = zipf.namelist()
+
+            # Remove pastas vazias do ZIP recriando-o sem elas
+            with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                for item in zip_contents:
+                    if item not in empty_folders:
+                        zipf.write(os.path.join(source_folder, item), item)
+                print("✔️ Pastas vazias removidas do ZIP.")
+
+        print(f"✅ Arquivo ZIP '{zip_filename}' criado com sucesso!")
 
     except FileNotFoundError as fnf_error:
         print(f"Erro: {str(fnf_error)}")
