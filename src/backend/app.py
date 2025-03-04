@@ -5,28 +5,27 @@ import zipfile
 from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
 
-# ✅ Garante que o diretório `src/` seja reconhecido pelo Python
+# Garante que o diretório src/ seja reconhecido pelo Python
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-# ✅ Importa corretamente os módulos dentro de `backend/`
+# Importa os módulos dentro de backend/
 from src.backend.analyzer import StructureAnalyzer
 from src.backend.generator import CodeGenerator
 
 app = Flask(__name__, static_folder="../frontend", static_url_path="/")
-
 CORS(app)  # Permite requisições de diferentes origens
 
-# 🔹 Servir o frontend (HTML) ao acessar "/"
+# Servir o frontend (HTML) ao acessar "/"
 @app.route("/")
 def serve_frontend():
     return send_from_directory(app.static_folder, "index.html")
 
-# 🔹 Servir arquivos estáticos (CSS, JS, imagens)
+# Servir arquivos estáticos (CSS, JS, imagens)
 @app.route("/<path:path>")
 def serve_static_files(path):
     return send_from_directory(app.static_folder, path)
 
-# 🔹 Rota para gerar estrutura de projeto
+# Rota para gerar estrutura de projeto
 @app.route("/gerar-estrutura", methods=["POST"])
 def gerar_estrutura():
     if request.method == "GET":
@@ -55,7 +54,7 @@ def gerar_estrutura():
     except Exception as e:
         return jsonify({"erro": f"Erro interno: {str(e)}"}), 500
 
-# 🔹 Rota para baixar estrutura gerada como um arquivo .zip
+# Rota para baixar estrutura gerada como um arquivo .zip
 @app.route("/baixar-estrutura", methods=["POST"])
 def baixar_estrutura():
     if not request.is_json:
@@ -75,7 +74,13 @@ def baixar_estrutura():
 
         # Cria a estrutura em um diretório temporário
         temp_dir = tempfile.mkdtemp()
+        
+        # Certifique-se de que a estrutura seja gerada corretamente
         generator.create_structure()  # Removido o argumento 'base_path'
+
+        # Verifique se a estrutura foi gerada
+        if not os.listdir(temp_dir):
+            return jsonify({"erro": "Falha na criação da estrutura. A pasta está vazia."}), 500
 
         # Compacta a estrutura
         zip_path = os.path.join(temp_dir, "estrutura.zip")
@@ -92,6 +97,6 @@ def baixar_estrutura():
     except Exception as e:
         return jsonify({"erro": f"Erro ao gerar ou compactar a estrutura: {str(e)}"}), 500
 
-# 🔹 Iniciar servidor no modo produção
+# Iniciar servidor no modo produção
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000, debug=True)
