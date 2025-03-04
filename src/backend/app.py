@@ -75,9 +75,9 @@ def baixar_estrutura():
 
         # Cria a estrutura em um diretório temporário
         temp_dir = tempfile.mkdtemp()
-        generator.create_structure()  # Removido o argumento 'base_path'
+        generator.create_structure(temp_dir)  # Passa o temp_dir para a criação
 
-        # Compacta a estrutura
+        # Compacta a estrutura gerada no diretório temporário
         zip_path = os.path.join(temp_dir, "estrutura.zip")
         with zipfile.ZipFile(zip_path, 'w') as zipf:
             for root, dirs, files in os.walk(temp_dir):
