@@ -77,25 +77,17 @@ def baixar_estrutura():
         temp_dir = tempfile.mkdtemp()
         generator.create_structure(temp_dir)  # Passa o temp_dir para a criação
 
-        # Verifica se há arquivos no diretório temporário antes de compactar
-        if not any(os.scandir(temp_dir)):  # Verifica se o diretório está vazio
-            raise ValueError("A estrutura gerada está vazia.")
-
-        # Compacta a estrutura gerada no diretório temporário
+        # Cria o arquivo ZIP fora da pasta temporária, não incluindo o próprio arquivo ZIP
         zip_path = os.path.join(temp_dir, "estrutura.zip")
         with zipfile.ZipFile(zip_path, 'w') as zipf:
             for root, dirs, files in os.walk(temp_dir):
                 for file in files:
                     file_path = os.path.join(root, file)
                     arcname = os.path.relpath(file_path, temp_dir)
-                    zipf.write(file_path, arcname)
 
-            # Remover pastas vazias (caso tenha alguma) da estrutura ZIP
-            for root, dirs, files in os.walk(temp_dir):
-                for dir in dirs:
-                    dir_path = os.path.join(root, dir)
-                    if not os.listdir(dir_path):  # Verifica se a pasta está vazia
-                        os.rmdir(dir_path)  # Remove a pasta vazia
+                    # Não inclua o arquivo zip dentro do próprio zip
+                    if not file_path.endswith("estrutura.zip"):
+                        zipf.write(file_path, arcname)
 
         # Envia o arquivo .zip para o cliente
         return send_file(zip_path, as_attachment=True, download_name="estrutura.zip")
