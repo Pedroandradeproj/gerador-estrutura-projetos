@@ -43,13 +43,13 @@ class CodeGenerator:
         code_lines.append('\nprint(f"Estrutura criada com sucesso em: {base_path}")')
         return "\n".join(code_lines)
 
-    def create_structure(self):
+    def create_structure(self, temp_dir=None):
         """
         Cria a estrutura de pastas e arquivos diretamente no sistema de arquivos.
         """
         # Obtém a pasta raiz do projeto a partir da primeira linha da estrutura
         base_folder = self.structure[0]["path"].strip("/")
-        base_path = Path.cwd() / base_folder
+        base_path = Path(temp_dir or Path.cwd()) / base_folder
 
         # Criação da pasta principal
         if not base_path.exists():
