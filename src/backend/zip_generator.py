@@ -1,6 +1,5 @@
 import os
 import zipfile
-import shutil
 
 def create_zip_structure(source_folder, zip_filename):
     """
@@ -15,6 +14,10 @@ def create_zip_structure(source_folder, zip_filename):
         if not os.path.exists(source_folder):
             raise FileNotFoundError(f'A pasta {source_folder} não foi encontrada.')
         
+        # Verifica se a pasta contém arquivos ou subpastas
+        if not any(os.scandir(source_folder)):
+            raise ValueError(f'A pasta {source_folder} está vazia.')
+
         # Cria o arquivo ZIP
         with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
             # Caminha pela pasta de origem e adiciona os arquivos ao ZIP
@@ -26,8 +29,13 @@ def create_zip_structure(source_folder, zip_filename):
                     zipf.write(file_path, arcname)
         
         print(f"Arquivo ZIP {zip_filename} criado com sucesso!")
+    
+    except FileNotFoundError as fnf_error:
+        print(f"Erro: {str(fnf_error)}")
+    except ValueError as ve_error:
+        print(f"Erro: {str(ve_error)}")
     except Exception as e:
-        print(f"Erro ao gerar ou compactar a estrutura: {str(e)}")
+        print(f"Erro inesperado: {str(e)}")
 
 
 def main():
