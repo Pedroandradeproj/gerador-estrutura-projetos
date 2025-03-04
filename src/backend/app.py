@@ -1,53 +1,51 @@
 import os
-import zipfile
+import json
 import tempfile
-from flask import Flask, request, jsonify, send_file
+import zipfile
+from flask import Flask, jsonify, request, send_file, send_from_directory
+from werkzeug.utils import secure_filename
+from flask_cors import CORS
+from src.backend.analyzer import StructureAnalyzer
+from src.backend.generator import CodeGenerator
 
-app = Flask(__name__)
+# Configurações do Flask
+app = Flask(__name__, static_folder="../frontend", static_url_path="/")
+CORS(app)  # Permite requisições de diferentes origens
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['ALLOWED_EXTENSIONS'] = {'json'}
 
-# Função que simula a análise da estrutura (ajuste conforme necessário)
-class StructureAnalyzer:
-    def __init__(self, input_text):
-        self.input_text = input_text
+# Função para verificar arquivos permitidos
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-    def get_structure(self):
-        # Lógica para analisar a estrutura do input_text
-        # Aqui, estamos simulando uma estrutura simples.
-        return [
-            {"type": "folder", "name": "folder1"},
-            {"type": "folder", "name": "folder2"},
-            {"type": "file", "name": "folder1/file1.txt", "content": "Conteúdo do arquivo 1"},
-            {"type": "file", "name": "folder2/file2.txt", "content": "Conteúdo do arquivo 2"}
-        ]
+# Rota para upload e processamento de JSON
+@app.route('/upload-json', methods=['POST'])
+def upload_json():
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'Arquivo não encontrado na requisição'}), 400
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'Nenhum arquivo selecionado'}), 400
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
 
-# Função para gerar a estrutura de pastas e arquivos (ajuste conforme necessário)
-class CodeGenerator:
-    def __init__(self, structure):
-        self.structure = structure
+            # Carregar o conteúdo do arquivo JSON
+            with open(file_path, 'r') as f:
+                estrutura = json.load(f)
 
-    def create_structure(self, base_path):
-        for item in self.structure:
-            if item["type"] == "folder":
-                folder_path = os.path.join(base_path, item["name"])
-                os.makedirs(folder_path, exist_ok=True)
-            elif item["type"] == "file":
-                file_path = os.path.join(base_path, item["name"])
-                with open(file_path, 'w') as file:
-                    file.write(item["content"])
+            return jsonify({'mensagem': 'Estrutura recebida e processada com sucesso', 'estrutura': estrutura}), 200
+        else:
+            return jsonify({'error': 'Formato de arquivo inválido. Envie um arquivo JSON.'}), 400
+    except Exception as e:
+        return jsonify({'error': f'Ocorreu um erro ao processar o arquivo: {str(e)}'}), 500
 
-# Função para adicionar arquivos ao .zip e garantir que as pastas sejam criadas
-def add_file_to_zip(zipf, file_path, arcname):
-    """
-    Função para adicionar um arquivo ao zip, criando os diretórios necessários.
-    """
-    # Cria os diretórios no zip se não existirem
-    dir_name = os.path.dirname(arcname)
-    if dir_name:
-        zipf.write(file_path, arcname)  # Cria o diretório no zip antes de adicionar o arquivo
-
-# Rota para baixar estrutura gerada como um arquivo .zip
-@app.route("/baixar-estrutura", methods=["POST"])
-def baixar_estrutura():
+# Rota para gerar estrutura de código a partir do JSON
+@app.route("/gerar-estrutura", methods=["POST"])
+def gerar_estrutura():
     if not request.is_json:
         return jsonify({"erro": "O corpo da requisição deve ser JSON"}), 415
 
@@ -63,25 +61,45 @@ def baixar_estrutura():
         estrutura = analyzer.get_structure()
         generator = CodeGenerator(estrutura)
 
-        # Cria a estrutura em um diretório temporário
-        temp_dir = tempfile.mkdtemp()
-        generator.create_structure(temp_dir)  # Gera a estrutura de arquivos e pastas
+        # Gera o código
+        codigo_gerado = generator.generate_code()
+        return jsonify({"codigo": codigo_gerado})
 
-        # Compacta a estrutura
+    except Exception as e:
+        return jsonify({"erro": f"Erro interno: {str(e)}"}), 500
+
+# Rota para baixar estrutura como .zip
+@app.route("/baixar-estrutura", methods=["POST"])
+def baixar_estrutura():
+    if not request.is_json:
+        return jsonify({"erro": "O corpo da requisição deve ser JSON"}), 415
+
+    data = request.get_json()
+    input_text = data.get("estrutura", "")
+
+    if not input_text:
+        return jsonify({"erro": "O campo 'estrutura' é obrigatório"}), 400
+
+    try:
+        analyzer = StructureAnalyzer(input_text)
+        estrutura = analyzer.get_structure()
+        generator = CodeGenerator(estrutura)
+
+        temp_dir = tempfile.mkdtemp()
+        generator.create_structure()
+
         zip_path = os.path.join(temp_dir, "estrutura.zip")
         with zipfile.ZipFile(zip_path, 'w') as zipf:
             for root, dirs, files in os.walk(temp_dir):
                 for file in files:
                     file_path = os.path.join(root, file)
                     arcname = os.path.relpath(file_path, temp_dir)
-                    add_file_to_zip(zipf, file_path, arcname)  # Adiciona os arquivos ao .zip com a estrutura correta
+                    zipf.write(file_path, arcname)
 
-        # Envia o arquivo .zip para o cliente
         return send_file(zip_path, as_attachment=True, download_name="estrutura.zip")
-
     except Exception as e:
         return jsonify({"erro": f"Erro ao gerar ou compactar a estrutura: {str(e)}"}), 500
 
-# Inicia o servidor Flask
+# Rodando o servidor
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
