@@ -4,7 +4,7 @@ import zipfile
 def create_zip_structure(source_folder, zip_filename):
     """
     Cria um arquivo ZIP contendo todos os arquivos e pastas da estrutura de origem.
-    
+
     Args:
         source_folder (str): Caminho da pasta a ser compactada.
         zip_filename (str): Nome do arquivo ZIP de destino.
@@ -18,18 +18,19 @@ def create_zip_structure(source_folder, zip_filename):
         if not any(os.scandir(source_folder)):
             raise ValueError(f'A pasta {source_folder} está vazia.')
 
+        # Caminho absoluto para o ZIP
+        zip_path = os.path.abspath(zip_filename)
+
         # Cria o arquivo ZIP
-        with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            # Caminha pela pasta de origem e adiciona os arquivos ao ZIP
+        with zipfile.ZipFile(zip_path, 'w') as zipf:
             for root, dirs, files in os.walk(source_folder):
                 for file in files:
-                    # Adiciona o arquivo ao ZIP com o caminho relativo
                     file_path = os.path.join(root, file)
-                    arcname = os.path.relpath(file_path, start=source_folder)
+                    arcname = os.path.relpath(file_path, source_folder)
                     zipf.write(file_path, arcname)
-        
-        print(f"Arquivo ZIP {zip_filename} criado com sucesso!")
-    
+
+        print(f"Arquivo ZIP '{zip_filename}' criado com sucesso!")
+
     except FileNotFoundError as fnf_error:
         print(f"Erro: {str(fnf_error)}")
     except ValueError as ve_error:
