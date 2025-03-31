@@ -135,4 +135,6 @@ O projeto está disponível online:
 🔗 **GitHub:** [Pedroandradeproj](https://github.com/Pedroandradeproj)  
 🔗 **GitHub:** [Tec4Avalon](https://github.com/Tec4Avalon)
 
-📌 Projeto open-source, fique à vontade para contribuir! 🚀🔥
+## 📜 Licença
+Este projeto está licenciado sob a [MIT License](https://opensource.org/licenses/MIT) - veja o arquivo **LICENSE** para mais detalhes.
+
