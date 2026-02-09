@@ -1,16 +1,37 @@
-# 🚀 Gerador de Estrutura de Projetos
+# 🏗️ Gerador de Estrutura de Projetos - Texto para Código
 
-## 📌 Sobre o Projeto
-O **Gerador de Estrutura de Projetos** é uma ferramenta automatizada que permite aos usuários criar a estrutura inicial de diretórios e arquivos para seus projetos. Com um clique, você pode definir uma hierarquia de pastas e obter um código Python pronto para ser executado.
+## ✨ Transforme Descrições em Estruturas de Projetos Prontas
 
-✅ **Principais Funcionalidades**
-- Geração automática de estrutura de diretórios e arquivos.
-- Interface intuitiva para entrada de dados.
-- **Modo Claro/Escuro** para personalização do visual.
-- **Toasts de notificação** no lugar de `alert()`, melhorando a experiência do usuário.
-- Opção para **copiar ou baixar** o código gerado.
+O **Gerador de Estrutura de Projetos** é uma ferramenta inteligente que **automatiza o início de qualquer projeto de desenvolvimento**. Recebeu uma estrutura textual do ChatGPT, de um tutorial ou planejou sua arquitetura em texto? Basta colar e nosso sistema transforma essa descrição em uma **estrutura física completa de pastas e arquivos**.
+
+### 🎯 Diferencial Exclusivo
+- **Do Texto à Estrutura**: Converta instantaneamente descrições como `projeto/src/main.py, utils/helpers.py` em diretórios e arquivos reais
+- **Múltiplos Formatos de Saída**:
+  - 📦 **Download Direto**: Baixe a estrutura completa como pasta ZIP
+  - 🐍 **Código Python**: Obtenha o script que gera a estrutura
+  - 📋 **Copiar Código**: Copie apenas o código para usar em seu projeto
+- **Produtivo**: Elimine a criação manual repetitiva de pastas e arquivos base
 
 ---
+
+## 🚀 Funcionalidades Principais
+
+### ✅ Geração Inteligente
+- Criação automática de hierarquias complexas de diretórios
+- Geração de arquivos com extensões específicas
+- Suporte a estruturas aninhadas ilimitadas
+
+### 🎨 Experiência do Usuário
+- **Modo Claro/Escuro** com alternância em um clique
+- **Notificações Toast** elegantes (substitui alertas nativos)
+- Interface intuitiva e responsiva
+- Feedback visual em tempo real
+
+### 💾 Opções de Exportação
+1. **Baixar Estrutura Pronta** (.zip com todos os diretórios e arquivos)
+2. **Gerar Script Python** executável
+3. **Copiar Código** para implementação manual
+
 
 ## **🛠 Tecnologias Utilizadas**
 ### **📌 Backend**
